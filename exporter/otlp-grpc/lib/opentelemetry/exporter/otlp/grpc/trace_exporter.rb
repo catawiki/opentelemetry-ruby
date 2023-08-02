@@ -31,7 +31,7 @@ module OpenTelemetry
 
             @client = Opentelemetry::Proto::Collector::Trace::V1::TraceService::Stub.new(
               "#{uri.host}:#{uri.port}",
-              :this_channel_is_insecure
+              ::GRPC::Core::ChannelCredentials.new
             )
 
             @timeout = timeout.to_f
