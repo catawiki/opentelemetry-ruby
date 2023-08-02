@@ -24,6 +24,7 @@ module OpenTelemetry
 
           def initialize(endpoint: OpenTelemetry::Common::Utilities.config_opt('OTEL_EXPORTER_OTLP_TRACES_ENDPOINT', 'OTEL_EXPORTER_OTLP_ENDPOINT', default: 'http://localhost:4317/v1/traces'),
                          timeout: OpenTelemetry::Common::Utilities.config_opt('OTEL_EXPORTER_OTLP_TRACES_TIMEOUT', 'OTEL_EXPORTER_OTLP_TIMEOUT', default: 10),
+                         certificate_file: OpenTelemetry::Common::Utilities.config_opt('OTEL_EXPORTER_OTLP_TRACES_CERTIFICATE', 'OTEL_EXPORTER_OTLP_CERTIFICATE'),
                          metrics_reporter: nil)
             raise ArgumentError, "invalid url for OTLP::Exporter #{endpoint}" unless OpenTelemetry::Common::Utilities.valid_url?(endpoint)
 
@@ -31,7 +32,7 @@ module OpenTelemetry
 
             @client = Opentelemetry::Proto::Collector::Trace::V1::TraceService::Stub.new(
               "#{uri.host}:#{uri.port}",
-              ::GRPC::Core::ChannelCredentials.new
+              ::GRPC::Core::ChannelCredentials.new(certificate_file)
             )
 
             @timeout = timeout.to_f
